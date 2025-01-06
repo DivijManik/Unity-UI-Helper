@@ -25,8 +25,6 @@ public class UIHelperScript : EditorWindow
     public static void ShowWindow()
     {
         EditorWindow.GetWindow(typeof(UIHelperScript));
-
-        //Debug.Log("It's alive: " + target.name);
     }
 
     private void OnGUI()
@@ -52,7 +50,7 @@ public class UIHelperScript : EditorWindow
         Top = EditorGUILayout.TextField("Top", Top);
         Left = EditorGUILayout.TextField("Left", Left);
 
-        if (GUILayout.Button("CreateImage"))
+        if (GUILayout.Button("Create UI"))
         {
             if (canvas == null)
             {
@@ -151,11 +149,16 @@ public class UIHelperScript : EditorWindow
 
         placeHolder.transform.SetParent(textArea.transform);
         text.transform.SetParent(textArea.transform);
-        text.GetComponent<TextMeshProUGUI>().color = Color.black;
-
+        text.GetComponent<TextMeshProUGUI>().verticalAlignment = VerticalAlignmentOptions.Middle;
         text.GetComponent<RectTransform>().localPosition = Vector3.zero;
+
+        text.GetComponent<TextMeshProUGUI>().margin = new Vector4(35, 0, 35, 0);
+
         placeHolder.GetComponent<RectTransform>().localPosition = Vector3.zero;
         placeHolder.GetComponent<TextMeshProUGUI>().text = "Enter text...";
+        placeHolder.GetComponent<TextMeshProUGUI>().verticalAlignment = VerticalAlignmentOptions.Middle;
+
+        placeHolder.GetComponent<TextMeshProUGUI>().margin = new Vector4(35, 0, 35, 0);
 
         // Set Input fields text & placeholder
         textField.GetComponent<TMP_InputField>().textComponent = text.GetComponent<TextMeshProUGUI>();
