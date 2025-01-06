@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using System.Text.RegularExpressions;
 using System;
 using TMPro;
+using System.Linq;
+using System.Collections.Generic;
 
 public class UIHelperScript : EditorWindow
 {
@@ -11,6 +13,7 @@ public class UIHelperScript : EditorWindow
 
     [SerializeField] Transform canvas;
 
+    [Tooltip("You can copy this data from figma contains - width, height, top, left")]
     [SerializeField] string UIData;
 
     [SerializeField] string Top, Left;
@@ -26,18 +29,22 @@ public class UIHelperScript : EditorWindow
         EditorWindow.GetWindow(typeof(UIHelperScript));
     }
 
+    // top: 82px; left: 274px;
+
     private void OnGUI()
     {
         canvas = EditorGUILayout.ObjectField("Canvas/Parent", canvas, typeof(Transform), true) as Transform;
 
         sprite = EditorGUILayout.ObjectField("Sprite", sprite, typeof(Sprite), true) as Sprite;
 
-        //UIData = EditorGUILayout.TextField("UI Data", UIData);
+        UIData = EditorGUILayout.TextField("UI Data", UIData);
 
-        GUI.Label(new Rect(3, 85, position.width, 20), "Size Multiplier");
+        GUI.Label(new Rect(3, 105, position.width, 20), "Size Multiplier");
 
         GUILayout.Space(15);
         SizeMultiply = EditorGUILayout.IntSlider(SizeMultiply, 1, 7);
+
+        GUILayout.Space(20);
 
         type = (UIObjectType)EditorGUILayout.EnumPopup("UI Type", type);
 
@@ -46,11 +53,21 @@ public class UIHelperScript : EditorWindow
 
         GUILayout.Space(20);
 
-        Top = EditorGUILayout.TextField("Top", Top);
-        Left = EditorGUILayout.TextField("Left", Left);
+        // Top = EditorGUILayout.TextField("Top", Top);
+        // Left = EditorGUILayout.TextField("Left", Left);
 
         if (GUILayout.Button("Create UI"))
         {
+            List<string> str = UIData.Split().ToList();
+            for (int i = 0; i < str.Count - 1; i++)
+            {
+                if (str[i] == "top:")
+                    Top = str[i + 1];
+
+                if (str[i] == "left:")
+                    Left = str[i + 1];
+            }
+
             if (canvas == null)
             {
                 try
@@ -82,13 +99,22 @@ public class UIHelperScript : EditorWindow
 
             rectTransform.anchoredPosition = new Vector3(convertToInt(Left) * SizeMultiply, -convertToInt(Top) * SizeMultiply, 0);
             //rectTransform.anc
+
+            Top = Left = "";
         }
     }
 
     long convertToInt(string s)
     {
         var f = Regex.Replace(s, "[^0-9.]", "");
-        return Convert.ToInt64(f.ToString());
+        try
+        {
+            return Convert.ToInt64(f.ToString());
+        }
+        catch
+        {
+            return 0;
+        }
     }
 
     /// <summary>
@@ -173,7 +199,6 @@ public class UIHelperScript : EditorWindow
         textField.GetComponent<TMP_InputField>().ActivateInputField();
     }
 }
-
 
 public enum UIObjectType
 {
